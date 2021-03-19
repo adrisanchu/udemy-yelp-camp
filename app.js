@@ -46,12 +46,6 @@ app.get('/campgrounds/:id', async(req, res) => {
     res.render('campgrounds/show', { campground });
 });
 
-app.get('/makecampground', async (req, res) => {
-    const camp = new Campground({ title: 'My Backyard' , description: 'cheap camping!'});
-    await camp.save();
-    res.send(camp);  // display mongo result to check if it worked
-});
-
 app.listen(3000, () => {
     console.log('Server listening on port 3000');
 });
