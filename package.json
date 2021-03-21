@@ -4,6 +4,7 @@
   "description": "This is the final project from the Udemy's \"The Web Developer Bootcamp\" course by Colt Steele.",
   "main": "index.js",
   "scripts": {
+    "dev": "nodemon app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -20,6 +21,7 @@
   "dependencies": {
     "ejs": "^3.1.6",
     "express": "^4.17.1",
+    "method-override": "^3.0.0",
     "mongoose": "^5.12.1"
   }
 }
