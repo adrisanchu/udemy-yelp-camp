@@ -68,6 +68,11 @@ app.delete('/campgrounds/:id', async(req, res) => {
     res.redirect('/campgrounds');
 });
 
+// 404 page (in case the path does not exist)
+app.use((req, res) => {
+    res.status(404).send('NOT FOUND');
+});
+
 app.listen(3000, () => {
     console.log('Server listening on port 3000');
 });
