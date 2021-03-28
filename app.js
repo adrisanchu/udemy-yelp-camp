@@ -7,6 +7,7 @@ const catchAsync = require('./utils/catchAsync');
 const ExpressError = require('./utils/ExpressError');
 const methodOverride = require('method-override');
 const Campground = require('./models/campground');
+const Review = require('./models/review');
 
 const campgrounds = require('./routes/campgrounds');
 
@@ -39,6 +40,17 @@ app.use('/campgrounds', campgrounds);
 app.get('/', (req, res) => {
     res.render('home');
 });
+
+app.post('/campgrounds/:id/reviews', catchAsync(async (req, res) => {
+    const campground = await Campground.findById(req.params.id);
+    // create new review (independent from any campground)
+    const review = new Review(req.body.review);
+    // attach the review to a campground in an array of reviews
+    campground.reviews.push(review);
+    await review.save();
+    await campground.save();
+    res.redirect(`/campgrounds/${campground._id}`);
+}));
 
 // 404 page (in case the path does not exist)
 app.all('*', (req, res, next) => {
