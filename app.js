@@ -8,6 +8,7 @@ const ExpressError = require('./utils/ExpressError');
 const methodOverride = require('method-override');
 const Campground = require('./models/campground');
 const Review = require('./models/review');
+const { reviewSchema } = require('./schemas');
 
 const campgrounds = require('./routes/campgrounds');
 
@@ -37,11 +38,23 @@ app.use(methodOverride('_method'));
 // routes
 app.use('/campgrounds', campgrounds);
 
+// Joi middleware for reviews
+const validateReview = (req, res, next) => {
+    const {error} = reviewSchema.validate(req.body);
+    if (error) {
+        // map through details array and join all messages separated by comma
+        const msg = error.details.map(el => el.message).join(',');
+        throw new ExpressError(msg, 400);
+    } else {
+        next();
+    }
+}
+
 app.get('/', (req, res) => {
     res.render('home');
 });
 
-app.post('/campgrounds/:id/reviews', catchAsync(async (req, res) => {
+app.post('/campgrounds/:id/reviews', validateReview, catchAsync(async (req, res) => {
     const campground = await Campground.findById(req.params.id);
     // create new review (independent from any campground)
     const review = new Review(req.body.review);
