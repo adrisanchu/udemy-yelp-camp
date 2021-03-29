@@ -65,6 +65,17 @@ app.post('/campgrounds/:id/reviews', validateReview, catchAsync(async (req, res)
     res.redirect(`/campgrounds/${campground._id}`);
 }));
 
+app.delete('/campgrounds/:id/reviews/:reviewId', catchAsync( async(req, res) => {
+    const { id, reviewId } = req.params;
+    // find the campground and remove the review
+    // using the pull() method (see Mongo docs)
+    await Campground.findByIdAndUpdate(id, {$pull: { reviews: reviewId }});
+    // delete the review from reviews
+    await Review.findByIdAndDelete(req.params.reviewId);
+    // send back to campgrounds page
+    res.redirect(`/campgrounds/${id}`);
+}));
+
 // 404 page (in case the path does not exist)
 app.all('*', (req, res, next) => {
     next(new ExpressError('Page not found :(', 404));
