@@ -4,6 +4,7 @@ const path = require('path');
 const mongoose = require('mongoose');
 const ejsMate = require('ejs-mate');
 const session = require('express-session');
+const flash = require('connect-flash');
 const ExpressError = require('./utils/ExpressError');
 const methodOverride = require('method-override');
 
@@ -38,7 +39,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 const sessionConfig = {
     secret: 'thisshouldbeabettersecret',
     resave: false,
-    saveUnitialized: true,
+    saveUninitialized: true,
     cookie: {
         httpOnly: true,
         // Date.now() in ms
@@ -48,22 +49,18 @@ const sessionConfig = {
     }
 };
 app.use(session(sessionConfig));
+app.use(flash());
+
+// flash middleware
+app.use((req, res, next) => {
+    res.locals.success = req.flash('success');
+    res.locals.error = req.flash('error');
+    next();
+});
 
 // routes
 app.use('/campgrounds', campgrounds);
 app.use('/campgrounds/:id/reviews', reviews);
-
-// Joi middleware for reviews
-const validateReview = (req, res, next) => {
-    const {error} = reviewSchema.validate(req.body);
-    if (error) {
-        // map through details array and join all messages separated by comma
-        const msg = error.details.map(el => el.message).join(',');
-        throw new ExpressError(msg, 400);
-    } else {
-        next();
-    }
-}
 
 app.get('/', (req, res) => {
     res.render('home');
