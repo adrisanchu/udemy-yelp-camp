@@ -3,14 +3,11 @@ const morgan = require('morgan');
 const path = require('path');
 const mongoose = require('mongoose');
 const ejsMate = require('ejs-mate');
-const catchAsync = require('./utils/catchAsync');
 const ExpressError = require('./utils/ExpressError');
 const methodOverride = require('method-override');
-const Campground = require('./models/campground');
-const Review = require('./models/review');
-const { reviewSchema } = require('./schemas');
 
 const campgrounds = require('./routes/campgrounds');
+const reviews = require('./routes/reviews');
 
 mongoose.connect('mongodb://localhost:27017/yelp-camp', {
     useNewUrlParser: true,
@@ -37,6 +34,7 @@ app.use(methodOverride('_method'));
 
 // routes
 app.use('/campgrounds', campgrounds);
+app.use('/campgrounds/:id/reviews', reviews);
 
 // Joi middleware for reviews
 const validateReview = (req, res, next) => {
@@ -54,27 +52,6 @@ app.get('/', (req, res) => {
     res.render('home');
 });
 
-app.post('/campgrounds/:id/reviews', validateReview, catchAsync(async (req, res) => {
-    const campground = await Campground.findById(req.params.id);
-    // create new review (independent from any campground)
-    const review = new Review(req.body.review);
-    // attach the review to a campground in an array of reviews
-    campground.reviews.push(review);
-    await review.save();
-    await campground.save();
-    res.redirect(`/campgrounds/${campground._id}`);
-}));
-
-app.delete('/campgrounds/:id/reviews/:reviewId', catchAsync( async(req, res) => {
-    const { id, reviewId } = req.params;
-    // find the campground and remove the review
-    // using the pull() method (see Mongo docs)
-    await Campground.findByIdAndUpdate(id, {$pull: { reviews: reviewId }});
-    // delete the review from reviews
-    await Review.findByIdAndDelete(req.params.reviewId);
-    // send back to campgrounds page
-    res.redirect(`/campgrounds/${id}`);
-}));
 
 // 404 page (in case the path does not exist)
 app.all('*', (req, res, next) => {
