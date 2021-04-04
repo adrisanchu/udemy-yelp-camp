@@ -33,6 +33,10 @@ router.post('/', validateCampground, catchAsync(async(req, res, next) => {
 }));
 
 router.get('/new', (req, res) => {
+    if(!req.isAuthenticated()) {
+        req.flash('error', 'You must be signed in.');
+        return res.redirect('/login');
+    }
     res.render('campgrounds/new');
 });
 
