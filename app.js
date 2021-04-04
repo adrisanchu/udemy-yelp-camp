@@ -55,13 +55,6 @@ const sessionConfig = {
 app.use(session(sessionConfig));
 app.use(flash());
 
-// flash middleware
-app.use((req, res, next) => {
-    res.locals.success = req.flash('success');
-    res.locals.error = req.flash('error');
-    next();
-});
-
 // passport setup
 app.use(passport.initialize()); // launches passport
 // this line shall be AFTER express-session !!
@@ -70,6 +63,16 @@ passport.use(new LocalStrategy(User.authenticate()));
 
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
+
+
+app.use((req, res, next) => {
+    // store passport's req.user to manage user-dependent info
+    res.locals.currentUser = req.user;
+    // flash middleware
+    res.locals.success = req.flash('success');
+    res.locals.error = req.flash('error');
+    next();
+});
 
 // routes
 app.use('/', userRoutes);
