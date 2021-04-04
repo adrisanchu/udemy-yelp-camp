@@ -7,6 +7,9 @@ const session = require('express-session');
 const flash = require('connect-flash');
 const ExpressError = require('./utils/ExpressError');
 const methodOverride = require('method-override');
+const passport = require('passport');
+const LocalStrategy = require('passport-local');
+const User = require('./models/user');
 
 const campgrounds = require('./routes/campgrounds');
 const reviews = require('./routes/reviews');
@@ -57,6 +60,15 @@ app.use((req, res, next) => {
     res.locals.error = req.flash('error');
     next();
 });
+
+// passport setup
+app.use(passport.initialize()); // launches passport
+// this line shall be AFTER express-session !!
+app.use(passport.session());    // keep user authenticated
+passport.use(new LocalStrategy(User.authenticate()));
+
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
 
 // routes
 app.use('/campgrounds', campgrounds);
