@@ -1,4 +1,4 @@
-const { campgroundSchema } = require('./schemas.js');
+const { campgroundSchema, reviewSchema } = require('./schemas');
 const Campground = require('./models/campground');
 const ExpressError = require('./utils/ExpressError');
 
@@ -36,3 +36,15 @@ module.exports.isAuthor = async(req, res, next) => {
     }
     next();
 };
+
+// Joi middleware for reviews
+module.exports.validateReview = (req, res, next) => {
+    const {error} = reviewSchema.validate(req.body);
+    if (error) {
+        // map through details array and join all messages separated by comma
+        const msg = error.details.map(el => el.message).join(',');
+        throw new ExpressError(msg, 400);
+    } else {
+        next();
+    }
+}
