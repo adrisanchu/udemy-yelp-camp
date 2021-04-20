@@ -1,14 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const Campground = require('../models/campground');
+const campgrounds = require('../controllers/campgrounds');
 const { isLoggedIn, isAuthor, validateCampground } = require('../middleware');
 const catchAsync = require('../utils/catchAsync');
 
 
-router.get('/', async(req, res) => {
-    const campgrounds = await Campground.find({});
-    res.render('campgrounds/index', { campgrounds });
-});
+router.get('/', catchAsync( campgrounds.index ));
 
 router.post('/', isLoggedIn, validateCampground, catchAsync(async(req, res, next) => {
     // if (!req.body.campground) throw new ExpressError('Invalid Campground Data', 400);
