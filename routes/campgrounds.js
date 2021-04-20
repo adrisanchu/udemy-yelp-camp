@@ -5,9 +5,9 @@ const { isLoggedIn, isAuthor, validateCampground } = require('../middleware');
 const catchAsync = require('../utils/catchAsync');
 
 
-router.get('/', catchAsync( campgrounds.index ));
-
-router.post('/', isLoggedIn, validateCampground, catchAsync( campgrounds.createCampground ));
+router.route('/')
+    .get(catchAsync( campgrounds.index ))
+    .post(isLoggedIn, validateCampground, catchAsync( campgrounds.createCampground ));
 
 router.get('/new', isLoggedIn, campgrounds.renderNewForm );
 
