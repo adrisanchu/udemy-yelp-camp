@@ -1,5 +1,8 @@
 <% layout('layouts/boilerplate') %>
 <link rel="stylesheet" type="text/css" href="/css/stars.css">
+
+<div id='map' style='width: 400px; height: 300px;'></div>
+
 <div class="row">
     <div class="col-6">
         <div class="card mb-3">
@@ -72,3 +75,12 @@
         <% } %>
     </div>
 </div>
+
+
+<script>
+    // required to pass EJS data to our script !
+    const mapToken = '<%- process.env.MAPBOX_TOKEN %>';
+    const campground = '<%-JSON.stringify(campground)%>';
+</script>
+
+<script src="/js/showPageMap.js"></script>
