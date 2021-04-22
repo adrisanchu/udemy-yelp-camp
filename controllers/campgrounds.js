@@ -1,4 +1,7 @@
 const Campground = require('../models/campground');
+const mbxGeocoding = require("@mapbox/mapbox-sdk/services/geocoding");
+const mapBoxToken = process.env.MAPBOX_TOKEN;
+const geocoder = mbxGeocoding({ accessToken: mapBoxToken });
 
 
 module.exports.index = async(req, res) => {
@@ -11,11 +14,20 @@ module.exports.renderNewForm = (req, res) => {
 };
 
 module.exports.createCampground = async(req, res, next) => {
+    // use MapBox API to get lat long
+    const geoData = await geocoder.forwardGeocode({
+        query: req.body.campground.location,
+        limit: 1
+    }).send();
     // if (!req.body.campground) throw new ExpressError('Invalid Campground Data', 400);
     const campground = new Campground(req.body.campground);
+    // add geometry from MapBox API (check the docs for more info)
+    // what we want is stored in .features[0].geometry
+    campground.geometry = geoData.body.features[0].geometry;
     // authoring campground before creation
     campground.author = req.user._id;
     await campground.save();
+    console.log(campground);
     req.flash('success', 'New campground created successfully');
     res.redirect(`/campgrounds/${campground._id}`);
 };
