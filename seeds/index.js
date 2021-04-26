@@ -38,7 +38,10 @@ const seedDB = async() => {
             // set all campgrounds located at Madrid by default !
             geometry: {
                 type: 'Point',
-                coordinates: [ -3.69194, 40.41889 ]
+                coordinates: [
+                    cities[random1000].longitude,
+                    cities[random1000].latitude
+                ]
             }
         })
         await camp.save();
