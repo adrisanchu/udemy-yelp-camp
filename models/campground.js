@@ -2,6 +2,9 @@ const mongoose = require('mongoose');
 const Review = require('./review');
 const Schema = mongoose.Schema;
 
+// activate Mongoose virtuals
+const opts = { toJSON: { virtuals: true } };
+
 const CampgroundSchema = new Schema({
     title: String,
     price: Number,
@@ -29,6 +32,17 @@ const CampgroundSchema = new Schema({
             ref: 'Review'
         }
     ]
+}, opts);
+
+CampgroundSchema.virtual('properties').get(function () {
+    // pass campground._id, description and title to .properties
+    // to access it later on on the view, so then we can use it like:
+    // `<a href='/campgrounds/${this._id}'>${this.title}</a>`;
+    return {
+        id: this._id,
+        title: this.title,
+        description: this.description
+      }
 });
 
 CampgroundSchema.post('findOneAndDelete', async function(doc) {
