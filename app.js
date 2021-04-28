@@ -1,3 +1,7 @@
+if (process.env.NODE_ENV !== 'production') {
+    require('dotenv').config();  // to read .env file
+}
+
 const express = require('express');
 const morgan = require('morgan');
 const path = require('path');
@@ -10,11 +14,12 @@ const methodOverride = require('method-override');
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
 const User = require('./models/user');
-require('dotenv').config();  // to read .env file
+const mongoSanitize = require('express-mongo-sanitize');
 
 const userRoutes = require('./routes/users');
 const campgroundsRoutes = require('./routes/campgrounds');
 const reviewsRoutes = require('./routes/reviews');
+
 
 mongoose.connect('mongodb://localhost:27017/yelp-camp', {
     useNewUrlParser: true,
@@ -29,6 +34,7 @@ db.once('open', () => {
     console.log('Database connected');
 });
 
+
 const app = express();
 
 app.engine('ejs', ejsMate);
@@ -39,14 +45,19 @@ app.use(morgan('tiny'));
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(mongoSanitize({
+    replaceWith: '_'
+}));
 
 // express-session setup
 const sessionConfig = {
+    name: 'yc-session',
     secret: 'thisshouldbeabettersecret',
     resave: false,
     saveUninitialized: true,
     cookie: {
         httpOnly: true,
+        // secure: true,    // only works in https !
         // Date.now() in ms
         // expiration one week after creation
         expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
