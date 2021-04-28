@@ -15,6 +15,7 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local');
 const User = require('./models/user');
 const mongoSanitize = require('express-mongo-sanitize');
+const helmet = require('helmet');
 
 const userRoutes = require('./routes/users');
 const campgroundsRoutes = require('./routes/campgrounds');
@@ -66,6 +67,8 @@ const sessionConfig = {
 };
 app.use(session(sessionConfig));
 app.use(flash());
+// helmet: disable security policy (for the moment)
+app.use(helmet( {contentSecurityPolicy: false} ));
 
 // passport setup
 app.use(passport.initialize()); // launches passport
