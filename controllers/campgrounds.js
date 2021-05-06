@@ -21,6 +21,13 @@ module.exports.createCampground = async(req, res, next) => {
     }).send();
     // if (!req.body.campground) throw new ExpressError('Invalid Campground Data', 400);
     const campground = new Campground(req.body.campground);
+    
+    // map over req.files to get access to the images attached in the form (new campground)
+    campground.images = req.files.map(f => ({
+        url: f.path,
+        filename: f.filename
+    }));
+
     // add geometry from MapBox API (check the docs for more info)
     // what we want is stored in .features[0].geometry
     campground.geometry = geoData.body.features[0].geometry;
