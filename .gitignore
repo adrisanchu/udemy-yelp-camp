@@ -1,2 +1,4 @@
 node_modules
 .env
+# cloudinary url paths for random imgs
+/seeds/imgs.js

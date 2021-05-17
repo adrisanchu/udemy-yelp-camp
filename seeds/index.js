@@ -1,7 +1,9 @@
 const mongoose = require('mongoose');
 const cities = require('./cities');
+const cloudinaryImages = require('./imgs');
 const { places, descriptors } = require('./seedHelpers');
 const Campground = require('../models/campground');
+
 
 mongoose.connect('mongodb://localhost:27017/yelp-camp', {
     useNewUrlParser: true,
@@ -25,6 +27,8 @@ const seedDB = async() => {
     await Campground.deleteMany({});
     for(let i=0;i<50;i++){
         const random1000 = Math.floor(Math.random() * 1000);
+        const random6 = Math.floor(Math.random() * 6);
+        const random6bis = Math.floor(Math.random() * 6);
         const price = Math.floor(Math.random() * 20) + 10;
         const camp = new Campground({
             title: `${sample(descriptors)} ${sample(places)}`,
@@ -32,8 +36,19 @@ const seedDB = async() => {
             author: '6069b56dde3f557ae2018cb9',
             location: `${cities[random1000].city}, ${cities[random1000].state}`,
             // random img from unsplash API
-            image: 'https://source.unsplash.com/collection/483251',
-            description: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ut ratione saepe pariatur perferendis repudiandae, fugit autem. Reiciendis, deleniti praesentium quam iusto nulla neque quo. Rem dolorem maxime perspiciatis voluptas vero. Error voluptates cumque quis optio aliquam dolorum recusandae officiis culpa nostrum perspiciatis quisquam, harum aspernatur porro eos necessitatibus debitis quas, consequatur, deleniti officia inventore quam odio. Ducimus nisi dignissimos fuga. Exercitationem consectetur beatae laudantium officiis itaque doloremque fuga dicta sit soluta similique quia commodi in veniam dolore labore facilis laboriosam delectus facere esse, illo, non modi! Veniam rem nostrum velit?',
+            // image: 'https://source.unsplash.com/collection/483251',
+            // 2 random imgs from my cloudinary account
+            images: [
+                {
+                    url:`${cloudinaryImages[random6].url}`,
+                    filename: `${cloudinaryImages[random6].filename}`
+                },
+                {
+                    url:`${cloudinaryImages[random6bis].url}`,
+                    filename: `${cloudinaryImages[random6bis].filename}`
+                }
+            ],
+            description: "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Ullam soluta dignissimos obcaecati tenetur qui doloribus fugit nihil, hic ad voluptate blanditiis quae eius commodi impedit in nulla voluptatibus, sequi nam!",
             price: price,
             // set all campgrounds located at Madrid by default !
             geometry: {
