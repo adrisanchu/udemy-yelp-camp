@@ -2,7 +2,7 @@
 <div class="row">
     <h1 class="text-center">Edit Campground</h1>
     <div class="col-md-6 offset-md-3">
-        <form action="/campgrounds/<%= campground._id %>?_method=PUT" method="POST" novalidate class="validated-form">
+        <form action="/campgrounds/<%= campground._id %>?_method=PUT" method="POST" novalidate class="validated-form" enctype="multipart/form-data">
             <div class="mb-3">
                 <label class="form-label" for="title">Title</label>
                 <input class="form-control" type="text" id="title" name="campground[title]" required value="<%= campground.title %>">
@@ -13,13 +13,6 @@
             <div class="mb-3">
                 <label class="form-label" for="location">Location</label>
                 <input class="form-control" type="text" id="location" name="campground[location]" required value="<%= campground.location %>">
-                <div class="valid-feedback">
-                    Looks good!
-                </div>
-            </div>
-            <div class="mb-3">
-                <label class="form-label" for="image">Image Url</label>
-                <input class="form-control" type="text" id="image" name="campground[image]" required value="<%= campground.image %>">
                 <div class="valid-feedback">
                     Looks good!
                 </div>
@@ -40,6 +33,11 @@
                 <div class="valid-feedback">
                     Looks good!
                 </div>
+            </div>
+            <div class="mb-3">
+                <label for="image" class="form-label">Choose image(s) to upload</label>
+                <!-- name="image" must match with upload.array('image') ! (routes) -->
+                <input type="file" class="form-control" name="image" id="image" multiple>
             </div>
             <button class="btn btn-success">Update Campground</button>
         </form>
