@@ -39,6 +39,16 @@
                 <!-- name="image" must match with upload.array('image') ! (routes) -->
                 <input type="file" class="form-control" name="image" id="image" multiple>
             </div>
+            <div class="mb-3">
+                <% campground.images.forEach(function(img, i) { %>
+                    <img src="<%= img.url %>" class="img-thumbnail" alt="">
+                    <div class="form-check-inline">
+                        <!-- pass imgs checked in the array deleteImages[] -->
+                        <input type="checkbox" id="image-<%=i%>" name="deleteImages[]" value="<%=img.filename%>">
+                    </div>
+                    <label for="image-<%=i%>">Delete?</label>
+                <% }) %>  
+            </div>
             <button class="btn btn-success">Update Campground</button>
         </form>
         
