@@ -67,6 +67,7 @@ module.exports.renderEditForm = async(req, res) => {
 
 module.exports.updateCampground = async(req, res) => {
     const { id } = req.params;
+    const imgsToDelete = req.body.deleteImages;
     const campground = await Campground.findByIdAndUpdate(id, { ...req.body.campground });
     imgs = req.files.map(f => ({
         url: f.path,
@@ -74,6 +75,11 @@ module.exports.updateCampground = async(req, res) => {
     }));
     // pass imgs one by one inside the array with spread
     campground.images.push(...imgs);
+    // remove images to delete (if any) both in cloudinary and mongo
+    if(imgsToDelete) {
+        // remove imgs in Mongo
+        await campground.updateOne({ $pull: { images: { filename: { $in: imgsToDelete } } } });
+    }
     await campground.save();
     req.flash('success', 'Campground updated successfully');
     res.redirect(`/campgrounds/${campground._id}`);
