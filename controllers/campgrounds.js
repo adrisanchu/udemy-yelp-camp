@@ -1,4 +1,5 @@
 const Campground = require('../models/campground');
+const { cloudinary } = require('../cloudinary');
 const mbxGeocoding = require("@mapbox/mapbox-sdk/services/geocoding");
 const mapBoxToken = process.env.MAPBOX_TOKEN;
 const geocoder = mbxGeocoding({ accessToken: mapBoxToken });
@@ -77,6 +78,10 @@ module.exports.updateCampground = async(req, res) => {
     campground.images.push(...imgs);
     // remove images to delete (if any) both in cloudinary and mongo
     if(imgsToDelete) {
+        // delete each img in cloudinary
+        for(let filename of imgsToDelete) {
+            await cloudinary.uploader.destroy(filename);
+        }
         // remove imgs in Mongo
         await campground.updateOne({ $pull: { images: { filename: { $in: imgsToDelete } } } });
     }
