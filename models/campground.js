@@ -5,6 +5,11 @@ const Schema = mongoose.Schema;
 // activate Mongoose virtuals
 const opts = { toJSON: { virtuals: true } };
 
+const ImageSchema = new Schema({
+    url: String,
+    filename: String
+});
+
 const CampgroundSchema = new Schema({
     title: String,
     price: Number,
@@ -25,12 +30,7 @@ const CampgroundSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'User'
     },
-    images: [
-        {
-            url: String,
-            filename: String
-        }
-    ],
+    images: [ImageSchema],
     reviews: [
         {
             type: Schema.Types.ObjectId,
