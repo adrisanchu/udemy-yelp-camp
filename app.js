@@ -21,8 +21,10 @@ const userRoutes = require('./routes/users');
 const campgroundsRoutes = require('./routes/campgrounds');
 const reviewsRoutes = require('./routes/reviews');
 
-
-mongoose.connect('mongodb://localhost:27017/yelp-camp', {
+// MongoStore will use the express-session object
+const MongoStore = require('connect-mongo');
+const dbUrl = 'mongodb://localhost:27017/yelp-camp';
+mongoose.connect(dbUrl, {
     useNewUrlParser: true,
     useCreateIndex: true,
     useUnifiedTopology: true,
@@ -50,8 +52,22 @@ app.use(mongoSanitize({
     replaceWith: '_'
 }));
 
+// connect-mongo v.4, new way to declare store
+const store = MongoStore.create({
+    mongoUrl: dbUrl,
+    touchAfter: 24 * 60 * 60,                   // refresh session time, in seconds
+    crypto: {                                   // using encryption (recommended). See Mongo docs
+        secret: 'thisshouldbeabettersecret'
+    }
+});
+
+store.on("error", function(e) {
+    console.log("SESSION STORE ERROR", e);
+});
+
 // express-session setup
 const sessionConfig = {
+    store,
     name: 'yc-session',
     secret: 'thisshouldbeabettersecret',
     resave: false,
