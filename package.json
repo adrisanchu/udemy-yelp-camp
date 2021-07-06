@@ -4,6 +4,7 @@
   "description": "This is the final project from the Udemy's \"The Web Developer Bootcamp\" course by Colt Steele.",
   "main": "index.js",
   "scripts": {
+    "start": "node app.js",
     "dev": "nodemon app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
