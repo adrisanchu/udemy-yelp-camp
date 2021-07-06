@@ -23,7 +23,7 @@ const reviewsRoutes = require('./routes/reviews');
 
 // MongoStore will use the express-session object
 const MongoStore = require('connect-mongo');
-const dbUrl = 'mongodb://localhost:27017/yelp-camp';
+const dbUrl = process.env.DB_URL || 'mongodb://localhost:27017/yelp-camp';
 mongoose.connect(dbUrl, {
     useNewUrlParser: true,
     useCreateIndex: true,
@@ -52,12 +52,13 @@ app.use(mongoSanitize({
     replaceWith: '_'
 }));
 
+const secret = process.env.SECRET || 'thisshouldbeabettersecret'
 // connect-mongo v.4, new way to declare store
 const store = MongoStore.create({
     mongoUrl: dbUrl,
     touchAfter: 24 * 60 * 60,                   // refresh session time, in seconds
     crypto: {                                   // using encryption (recommended). See Mongo docs
-        secret: 'thisshouldbeabettersecret'
+        secret: secret
     }
 });
 
@@ -69,7 +70,7 @@ store.on("error", function(e) {
 const sessionConfig = {
     store,
     name: 'yc-session',
-    secret: 'thisshouldbeabettersecret',
+    secret: secret,
     resave: false,
     saveUninitialized: true,
     cookie: {
